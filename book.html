@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Book {{ vehicle.model }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div>
+            <h1>Book Your Vehicle</h1>
+            <p class="breadcrumb">
+                <a href="{{ url_for('vehicles') }}" style="color:var(--primary)">Vehicles</a>
+                &rsaquo; <a href="{{ url_for('vehicle_detail', vehicle_id=vehicle.vehicle_id) }}" style="color:var(--primary)">{{ vehicle.model }}</a>
+                &rsaquo; <span>Book</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+        <div style="max-width: 620px; margin: 0 auto;">
+
+            <!-- Vehicle Summary Card -->
+            <div class="summary-box">
+                <h3>Vehicle Summary</h3>
+                <div class="summary-row">
+                    <span>Vehicle</span>
+                    <strong>{{ vehicle.model }} ({{ vehicle.type }})</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Location</span>
+                    <strong>📍 {{ vehicle.location }}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Daily Rate</span>
+                    <strong>₹{{ vehicle.daily_rate }} / day</strong>
+                </div>
+            </div>
+
+            <!-- Booking Form -->
+            <div class="admin-section">
+                <div class="admin-section-header">
+                    <h2>Select Your Dates</h2>
+                </div>
+
+                <form method="POST" id="bookingForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="start_date">📅 Pickup Date</label>
+                            <input type="date" name="start_date" id="start_date"
+                                   min="{{ now().strftime('%Y-%m-%d') }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_date">📅 Return Date</label>
+                            <input type="date" name="end_date" id="end_date"
+                                   min="{{ now().strftime('%Y-%m-%d') }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Live total display -->
+                    <div id="calcDisplay" class="calc-display">
+                        <p id="totalDisplay"></p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block btn-lg" id="submit-booking">
+                        Continue to Payment →
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+const rate = {{ vehicle.daily_rate }};
+const startDate = document.getElementById('start_date');
+const endDate   = document.getElementById('end_date');
+const display   = document.getElementById('calcDisplay');
+const totalText = document.getElementById('totalDisplay');
+
+function calculateTotal() {
+    if (startDate.value && endDate.value) {
+        const start = new Date(startDate.value);
+        const end   = new Date(endDate.value);
+        const days  = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+        if (days > 0) {
+            const total = days * rate;
+            totalText.innerHTML = `<strong>🧾 Total: ₹${total.toLocaleString('en-IN')}</strong> &nbsp;&bull;&nbsp; ${days} day${days > 1 ? 's' : ''} &times; ₹${rate}/day`;
+            display.style.display = 'block';
+        } else {
+            display.style.display = 'none';
+            if (days <= 0) alert('Return date must be after pickup date.');
+        }
+    }
+}
+
+startDate.addEventListener('change', function () {
+    endDate.min = this.value;
+    if (endDate.value && endDate.value < this.value) endDate.value = this.value;
+    calculateTotal();
+});
+endDate.addEventListener('change', calculateTotal);
+</script>
+{% endblock %}

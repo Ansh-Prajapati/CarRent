@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Bookings — Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div>
+            <h1>Manage Bookings</h1>
+            <p class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}" style="color:var(--primary)">Dashboard</a> &rsaquo; <span>Bookings</span></p>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+
+        <!-- Status Filter Tabs -->
+        <div class="admin-actions">
+            <a href="{{ url_for('admin_bookings') }}"
+               class="btn {% if not request.args.get('status') %}btn-primary{% else %}btn-secondary{% endif %}">All</a>
+            <a href="{{ url_for('admin_bookings') }}?status=PENDING"
+               class="btn {% if request.args.get('status') == 'PENDING' %}btn-warning{% else %}btn-secondary{% endif %}">⏳ Pending</a>
+            <a href="{{ url_for('admin_bookings') }}?status=CONFIRMED"
+               class="btn {% if request.args.get('status') == 'CONFIRMED' %}btn-success{% else %}btn-secondary{% endif %}">✅ Confirmed</a>
+            <a href="{{ url_for('admin_bookings') }}?status=COMPLETED"
+               class="btn {% if request.args.get('status') == 'COMPLETED' %}btn-info{% else %}btn-secondary{% endif %}">🏁 Completed</a>
+            <a href="{{ url_for('admin_bookings') }}?status=CANCELLED"
+               class="btn {% if request.args.get('status') == 'CANCELLED' %}btn-danger{% else %}btn-secondary{% endif %}">✕ Cancelled</a>
+        </div>
+
+        <div class="admin-section">
+            <div class="table-wrapper">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Customer</th>
+                                <th>Contact</th>
+                                <th>Vehicle</th>
+                                <th>Dates</th>
+                                <th>Days</th>
+                                <th>Amount</th>
+                                <th>Booking</th>
+                                <th>Payment</th>
+                                <th>Update</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td><strong style="color:var(--primary);">#{{ booking.booking_id }}</strong></td>
+                                <td><strong>{{ booking.full_name or booking.username }}</strong></td>
+                                <td>
+                                    <span style="font-size:0.85rem;">{{ booking.email }}</span><br>
+                                    <small style="color:var(--mid-grey);">{{ booking.phone }}</small>
+                                </td>
+                                <td>
+                                    <strong>{{ booking.model }}</strong><br>
+                                    <small style="color:var(--mid-grey);">{{ booking.type }}</small>
+                                </td>
+                                <td>
+                                    <strong>{{ booking.start_date }}</strong><br>
+                                    <small style="color:var(--mid-grey);">to {{ booking.end_date }}</small>
+                                </td>
+                                <td>{{ booking.total_days }}d</td>
+                                <td><strong>₹{{ booking.total_price }}</strong></td>
+                                <td>
+                                    <span class="badge badge-{{ booking.booking_status | lower }}">
+                                        {{ booking.booking_status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-{{ (booking.payment_status or 'pending') | lower }}">
+                                        {{ booking.payment_status or 'PENDING' }}
+                                    </span><br>
+                                    <small style="color:var(--mid-grey);font-size:0.73rem;">{{ booking.payment_method }}</small>
+                                </td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('update_booking', booking_id=booking.booking_id) }}"
+                                          style="display:flex;flex-direction:column;gap:6px;min-width:110px;">
+                                        <select name="status" style="padding:6px 8px;border:1px solid var(--pale);border-radius:var(--radius-sm);font-size:0.82rem;font-family:var(--font-body);background:var(--surface);color:var(--navy-mid);outline:none;">
+                                            <option value="PENDING"   {% if booking.booking_status == 'PENDING'   %}selected{% endif %}>Pending</option>
+                                            <option value="CONFIRMED" {% if booking.booking_status == 'CONFIRMED' %}selected{% endif %}>Confirm</option>
+                                            <option value="COMPLETED" {% if booking.booking_status == 'COMPLETED' %}selected{% endif %}>Complete</option>
+                                            <option value="CANCELLED" {% if booking.booking_status == 'CANCELLED' %}selected{% endif %}>Cancel</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="10">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">📅</div>
+                                        <h3>No Bookings Found</h3>
+                                        <p>No bookings match the current filter.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

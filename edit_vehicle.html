@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Vehicle — Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div>
+            <h1>Edit Vehicle</h1>
+            <p class="breadcrumb">
+                <a href="{{ url_for('admin_dashboard') }}" style="color:var(--primary)">Dashboard</a>
+                &rsaquo; <a href="{{ url_for('admin_vehicles') }}" style="color:var(--primary)">Vehicles</a>
+                &rsaquo; <span>Edit</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+        <div style="max-width: 760px; margin: 0 auto;">
+            <div class="admin-section">
+                <div class="admin-section-header">
+                    <h2>Vehicle Information</h2>
+                </div>
+
+                <form method="POST" id="edit-vehicle-form">
+                    <!-- Basic Info -->
+                    <h3 style="font-size: 1rem; margin: 20px 0 10px; color: var(--primary);">Basic Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="model">Model <span style="color:var(--danger)">*</span></label>
+                            <input type="text" id="model" name="model" value="{{ vehicle.model }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="year">Year <span style="color:var(--danger)">*</span></label>
+                            <input type="number" id="year" name="year" value="{{ vehicle.year }}" min="2000" max="2026" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="type">Vehicle Type <span style="color:var(--danger)">*</span></label>
+                            <select id="type" name="type" required>
+                                <option value="Sedan" {% if vehicle.type == 'Sedan' %}selected{% endif %}>Sedan</option>
+                                <option value="SUV" {% if vehicle.type == 'SUV' %}selected{% endif %}>SUV</option>
+                                <option value="Hatchback" {% if vehicle.type == 'Hatchback' %}selected{% endif %}>Hatchback</option>
+                                <option value="Electric" {% if vehicle.type == 'Electric' %}selected{% endif %}>Electric</option>
+                                <option value="Sports" {% if vehicle.type == 'Sports' %}selected{% endif %}>Sports</option>
+                                <option value="MPV" {% if vehicle.type == 'MPV' %}selected{% endif %}>MPV</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="daily_rate">Daily Rate (₹) <span style="color:var(--danger)">*</span></label>
+                            <input type="number" id="daily_rate" name="daily_rate" value="{{ vehicle.daily_rate }}" min="1" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location <span style="color:var(--danger)">*</span></label>
+                        <select id="location" name="location" required>
+                            <option value="Mumbai" {% if vehicle.location == 'Mumbai' %}selected{% endif %}>Mumbai</option>
+                            <option value="Delhi" {% if vehicle.location == 'Delhi' %}selected{% endif %}>Delhi</option>
+                            <option value="Bangalore" {% if vehicle.location == 'Bangalore' %}selected{% endif %}>Bangalore</option>
+                            <option value="Chennai" {% if vehicle.location == 'Chennai' %}selected{% endif %}>Chennai</option>
+                            <option value="Pune" {% if vehicle.location == 'Pune' %}selected{% endif %}>Pune</option>
+                            <option value="Hyderabad" {% if vehicle.location == 'Hyderabad' %}selected{% endif %}>Hyderabad</option>
+                            <option value="Kolkata" {% if vehicle.location == 'Kolkata' %}selected{% endif %}>Kolkata</option>
+                        </select>
+                    </div>
+
+                    <!-- Detailed Specifications -->
+                    <h3 style="font-size: 1rem; margin: 25px 0 10px; color: var(--primary);">Detailed Specifications</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="variant">Variant</label>
+                            <input type="text" id="variant" name="variant" value="{{ vehicle.variant or '' }}" placeholder="e.g. ZX, VX, Sport">
+                        </div>
+                        <div class="form-group">
+                            <label for="fuel_type">Fuel Type</label>
+                            <select id="fuel_type" name="fuel_type">
+                                <option value="Petrol" {% if vehicle.fuel_type == 'Petrol' %}selected{% endif %}>Petrol</option>
+                                <option value="Diesel" {% if vehicle.fuel_type == 'Diesel' %}selected{% endif %}>Diesel</option>
+                                <option value="Electric" {% if vehicle.fuel_type == 'Electric' %}selected{% endif %}>Electric</option>
+                                <option value="Hybrid" {% if vehicle.fuel_type == 'Hybrid' %}selected{% endif %}>Hybrid</option>
+                                <option value="CNG" {% if vehicle.fuel_type == 'CNG' %}selected{% endif %}>CNG</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="transmission">Transmission</label>
+                            <select id="transmission" name="transmission">
+                                <option value="Manual" {% if vehicle.transmission == 'Manual' %}selected{% endif %}>Manual</option>
+                                <option value="Automatic" {% if vehicle.transmission == 'Automatic' %}selected{% endif %}>Automatic</option>
+                                <option value="CVT" {% if vehicle.transmission == 'CVT' %}selected{% endif %}>CVT</option>
+                                <option value="DCT" {% if vehicle.transmission == 'DCT' %}selected{% endif %}>DCT</option>
+                                <option value="DSG" {% if vehicle.transmission == 'DSG' %}selected{% endif %}>DSG</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="seating_capacity">Seating Capacity</label>
+                            <input type="number" id="seating_capacity" name="seating_capacity" min="2" max="9" value="{{ vehicle.seating_capacity or 5 }}">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="km_driven">KM Driven</label>
+                            <input type="number" id="km_driven" name="km_driven" min="0" value="{{ vehicle.km_driven or 0 }}" placeholder="e.g. 15000">
+                        </div>
+                        <div class="form-group">
+                            <label for="engine_cc">Engine (CC)</label>
+                            <input type="text" id="engine_cc" name="engine_cc" value="{{ vehicle.engine_cc or '' }}" placeholder="e.g. 1498cc">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mileage">Mileage (km/l)</label>
+                            <input type="text" id="mileage" name="mileage" value="{{ vehicle.mileage or '' }}" placeholder="e.g. 18 km/l">
+                        </div>
+                        <div class="form-group">
+                            <label for="color">Color</label>
+                            <input type="text" id="color" name="color" value="{{ vehicle.color or '' }}" placeholder="e.g. Pearl White">
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="5">{{ vehicle.description or '' }}</textarea>
+                    </div>
+
+                    <!-- Image URL -->
+                    <div class="form-group">
+                        <label for="image_url">Image URL</label>
+                        {% if vehicle.image_url %}
+                        <div style="margin-bottom: 12px;">
+                            <img src="{{ get_image_url(vehicle.image_url) }}" alt="Current image"
+                                 style="max-width: 240px; border-radius: var(--radius-sm); border: 1px solid var(--pale); display: block;">
+                            <p style="font-size: 0.82rem; color: var(--mid-grey); margin-top: 6px; word-break: break-all;">Current: {{ vehicle.image_url }}</p>
+                        </div>
+                        {% endif %}
+                        <input type="text" id="image_url" name="image_url" value="{{ vehicle.image_url or '' }}"
+                               placeholder="e.g. images/car.png or https://example.com/car.jpg">
+                        <small>Leave unchanged to keep current image</small>
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" id="availability" name="availability" {% if vehicle.availability %}checked{% endif %}>
+                            <label for="availability">Available for booking right now</label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg" id="update-vehicle-btn">Save Changes</button>
+                        <a href="{{ url_for('admin_vehicles') }}" class="btn btn-secondary btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

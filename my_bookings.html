@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div>
+            <h1>My Bookings</h1>
+            <p class="breadcrumb">Home &rsaquo; <span>My Bookings</span></p>
+        </div>
+        <a href="{{ url_for('vehicles') }}" class="btn btn-primary">+ New Booking</a>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+        <div class="admin-section">
+            <div class="table-wrapper">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Vehicle</th>
+                                <th>Type</th>
+                                <th>Dates</th>
+                                <th>Days</th>
+                                <th>Amount</th>
+                                <th>Booking Status</th>
+                                <th>Payment</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td><strong style="color:var(--primary);">#{{ booking.booking_id }}</strong></td>
+                                <td><strong>{{ booking.model }}</strong></td>
+                                <td>{{ booking.type }}</td>
+                                <td>
+                                    <span style="font-weight:600;">{{ booking.start_date }}</span><br>
+                                    <small style="color:var(--mid-grey);">to {{ booking.end_date }}</small>
+                                </td>
+                                <td>{{ booking.total_days }}d</td>
+                                <td><strong>₹{{ booking.total_price }}</strong></td>
+                                <td>
+                                    <span class="badge badge-{{ booking.booking_status | lower }}">
+                                        {{ booking.booking_status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-{{ (booking.payment_status or 'pending') | lower }}">
+                                        {{ booking.payment_status or 'PENDING' }}
+                                    </span>
+                                    {% if booking.transaction_id %}
+                                    <br><small style="color:var(--mid-grey);font-size:0.73rem;">Txn: {{ booking.transaction_id[-8:] }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.booking_status == 'PENDING' %}
+                                    <a href="{{ url_for('cancel_booking', booking_id=booking.booking_id) }}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Cancel this booking?')">
+                                        Cancel
+                                    </a>
+                                    {% else %}
+                                    <span class="badge badge-secondary">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="9">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">📅</div>
+                                        <h3>No Bookings Yet</h3>
+                                        <p>You haven't made any bookings. Start by browsing available vehicles.</p>
+                                        <a href="{{ url_for('vehicles') }}" class="btn btn-primary">Browse Vehicles</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

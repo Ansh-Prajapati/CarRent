@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Home — Find Your Perfect Ride{% endblock %}
+
+{% block content %}
+<!-- ── Hero ─────────────────────────────────────────── -->
+<div class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">🚀 India's #1 Car Rental Platform</div>
+        <h1>Find Your <span>Perfect Ride</span></h1>
+        <p>Browse from hundreds of well-maintained vehicles. Book online in minutes and hit the road with confidence.</p>
+
+        <form class="search-box" action="{{ url_for('vehicles') }}" method="GET">
+            <select name="type" id="hero-type">
+                <option value="">🚗 All Vehicle Types</option>
+                <option value="Sedan">Sedan</option>
+                <option value="SUV">SUV</option>
+                <option value="Hatchback">Hatchback</option>
+                <option value="Electric">Electric</option>
+                <option value="Sports">Sports</option>
+                <option value="MPV">MPV</option>
+            </select>
+
+            <select name="location" id="hero-location">
+                <option value="">📍 All Locations</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Bangalore">Bangalore</option>
+                <option value="Chennai">Chennai</option>
+                <option value="Pune">Pune</option>
+            </select>
+
+            <button type="submit" class="btn-search">Search Vehicles</button>
+        </form>
+
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-number">500+</div>
+                <div class="hero-stat-label">Vehicles</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">10K+</div>
+                <div class="hero-stat-label">Happy Customers</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">5</div>
+                <div class="hero-stat-label">Cities</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">4.9★</div>
+                <div class="hero-stat-label">Rating</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Why Choose Us ─────────────────────────────────── -->
+<div class="features">
+    <div class="container">
+        <h2 class="section-title">Why Choose CRS?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🚗</div>
+                <h3>Wide Selection</h3>
+                <p>Choose from SUVs, Sedans, Electrics and more — all well-maintained and ready to drive.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Best Prices</h3>
+                <p>Competitive rates with absolutely no hidden fees. What you see is what you pay.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure Payments</h3>
+                <p>Safe, encrypted UPI-based payment processing you can trust every time.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Instant Booking</h3>
+                <p>Simple online booking with instant confirmation — no waiting, no paperwork.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Top 10 Cars ─────────────────────────────────────── -->
+<div class="page-content">
+    <div class="container">
+        <h2 class="section-title">🔥 Top 10 Cars 🔥</h2>
+        <div class="vehicles-grid">
+            {% for vehicle in vehicles %}
+            <div class="vehicle-card">
+                <div class="vehicle-card-img">
+                    {% if vehicle.image_url %}
+                        <img src="{{ get_image_url(vehicle.image_url) }}" alt="{{ vehicle.model }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/400x300/1e293b/94a3b8?text={{ vehicle.model | urlencode }}" alt="{{ vehicle.model }}">
+                    {% endif %}
+                    <div class="vehicle-card-badge">{{ vehicle.type }}</div>
+                </div>
+                <div class="vehicle-card-content">
+                    <h3>{{ vehicle.model }}</h3>
+                    <p class="vehicle-type">{{ vehicle.type }} &bull; {{ vehicle.year }}</p>
+                    <p class="vehicle-location">📍 {{ vehicle.location }}</p>
+                    <div class="vehicle-price">
+                        ₹{{ vehicle.daily_rate }} <small>/ day</small>
+                    </div>
+                    <a href="{{ url_for('vehicle_detail', vehicle_id=vehicle.vehicle_id) }}"
+                       class="btn btn-primary btn-block">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center" style="margin: 20px 0 0;">
+            <a href="{{ url_for('vehicles') }}" class="btn btn-lg btn-primary">View All Vehicles →</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

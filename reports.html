@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics — Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div>
+            <h1>Reports &amp; Analytics</h1>
+            <p class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}" style="color:var(--primary)">Dashboard</a> &rsaquo; <span>Reports</span></p>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+
+        <!-- Period Toggle -->
+        <div class="period-toggle">
+            <a href="{{ url_for('admin_reports') }}?period=month"
+               class="period-btn {% if period == 'month' %}active{% endif %}">
+               📅 Monthly Overview
+            </a>
+            <a href="{{ url_for('admin_reports') }}?period=year"
+               class="period-btn {% if period == 'year' %}active{% endif %}">
+               📆 Yearly Overview
+            </a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 28px; margin-bottom: 28px;">
+            <!-- Revenue Chart -->
+            <div class="admin-section" style="margin-bottom: 0;">
+                <div class="admin-section-header">
+                    <h2>{{ report_title }} Timeline</h2>
+                </div>
+                <div style="margin-top: 20px;">
+                    {% set max_revenue = (revenue_data|map(attribute='total_revenue')|max|default(1)) %}
+                    {% set max_revenue = max_revenue if max_revenue > 0 else 1 %}
+
+                    {% for item in revenue_data %}
+                    <div class="chart-bar-row">
+                        <div class="chart-bar-labels">
+                            <span class="chart-bar-label">{{ item.label }}</span>
+                            <span class="chart-bar-value">₹{{ item.total_revenue|int }} <small>({{ item.transaction_count }} txn)</small></span>
+                        </div>
+                        <div class="chart-track">
+                            {% set width = (item.total_revenue / max_revenue * 100)|int %}
+                            <div class="chart-fill" style="width: {{ width if width > 0 else 0 }}%;">
+                                {% if width > 15 %}₹{{ item.total_revenue|int }}{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon" style="font-size: 2rem;">📉</div>
+                        <p style="margin: 0;">No revenue data for this period</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Summary Stats Stack -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                {% set total_bookings = revenue_data|sum(attribute='transaction_count')|default(0) %}
+                {% set total_revenue = revenue_data|sum(attribute='total_revenue')|default(0) %}
+                {% set avg = (total_revenue / total_bookings)|int if total_bookings > 0 else 0 %}
+
+                <div class="stat-card" style="background: linear-gradient(135deg, var(--success), var(--success-dark));">
+                    <div class="stat-header">
+                        <h3>Total Bookings Target</h3>
+                        <div class="stat-icon-wrap" style="background:rgba(255,255,255,0.2);">📊</div>
+                    </div>
+                    <div class="stat-number">{{ total_bookings }}</div>
+                    <div class="stat-label">Transactions in period</div>
+                </div>
+
+                <div class="stat-card" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark));">
+                    <div class="stat-header">
+                        <h3>Period Revenue</h3>
+                        <div class="stat-icon-wrap" style="background:rgba(255,255,255,0.2);">💰</div>
+                    </div>
+                    <div class="stat-number">₹{{ total_revenue|int }}</div>
+                    <div class="stat-label">Total generated</div>
+                </div>
+
+                <div class="stat-card" style="background: linear-gradient(135deg, var(--warning), var(--warning-dark));">
+                    <div class="stat-header">
+                        <h3>Avg. Book Value</h3>
+                        <div class="stat-icon-wrap" style="background:rgba(255,255,255,0.2);">📈</div>
+                    </div>
+                    <div class="stat-number">₹{{ avg }}</div>
+                    <div class="stat-label">Per booking average</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Vehicles -->
+        <div class="admin-section">
+            <div class="admin-section-header">
+                <h2>Top Performing Vehicles</h2>
+            </div>
+            <div class="table-wrapper">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vehicle</th>
+                                <th>Type</th>
+                                <th>Total Bookings</th>
+                                <th>Revenue</th>
+                                <th style="width: 30%;">Performance Metric</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set max_bookings = (popular_vehicles|map(attribute='booking_count')|max|default(1)) %}
+                            {% set max_bookings = max_bookings if max_bookings > 0 else 1 %}
+
+                            {% for vehicle in popular_vehicles %}
+                            <tr>
+                                <td><strong>{{ vehicle.model }}</strong></td>
+                                <td><span class="badge badge-secondary">{{ vehicle.type }}</span></td>
+                                <td style="font-weight: 600;">{{ vehicle.booking_count }}</td>
+                                <td><strong>₹{{ vehicle.revenue|int }}</strong></td>
+                                <td>
+                                    {% set vwidth = ((vehicle.booking_count / max_bookings) * 100)|int %}
+                                    <div class="perf-track">
+                                        <div class="perf-fill" style="width: {{ vwidth }}%;"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <div class="empty-icon" style="font-size:2rem;margin-bottom:10px;">🚗</div>
+                                        <p style="margin: 0;">No vehicle performance data available</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

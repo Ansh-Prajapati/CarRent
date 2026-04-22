@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}{{ vehicle.model }} — Vehicle Detail{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div>
+            <h1>{{ vehicle.model }}</h1>
+            <p class="breadcrumb">
+                <a href="{{ url_for('vehicles') }}" style="color:var(--primary)">Vehicles</a>
+                &rsaquo; <span>{{ vehicle.model }}</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+        <div class="detail-grid">
+            <!-- Image Column -->
+            <div class="detail-img-wrap">
+                {% if vehicle.image_url %}
+                    <img src="{{ get_image_url(vehicle.image_url) }}" alt="{{ vehicle.model }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/600x450/1e293b/94a3b8?text={{ vehicle.model | urlencode }}" alt="{{ vehicle.model }}">
+                {% endif %}
+            </div>
+
+            <!-- Info Column -->
+            <div class="detail-info">
+                <h1>{{ vehicle.model }}</h1>
+                <p class="detail-meta">{{ vehicle.type }} &bull; {{ vehicle.year }}</p>
+
+                <div class="detail-specs">
+                    <div class="spec-row">
+                        <span class="spec-label">📍 Location</span>
+                        <span class="spec-value">{{ vehicle.location }}</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">🏷️ Vehicle Type</span>
+                        <span class="spec-value">{{ vehicle.type }}</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">📅 Year</span>
+                        <span class="spec-value">{{ vehicle.year }}</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">📊 Availability</span>
+                        <span class="spec-value">
+                            {% if vehicle.availability %}
+                                <span class="availability-badge available">✓ Available Now</span>
+                            {% else %}
+                                <span class="availability-badge unavailable">✗ Currently Booked</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <p style="font-size:0.85rem;color:var(--mid-grey);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">About this vehicle</p>
+                    <p style="color:var(--charcoal);line-height:1.8;font-size:0.95rem;">
+                        {{ vehicle.description or 'Experience the perfect blend of comfort and performance with this well-maintained vehicle. Ideal for city drives, weekend getaways, and long journeys.' }}
+                    </p>
+                </div>
+
+                <div class="detail-price">
+                    ₹{{ vehicle.daily_rate }} <small>/ day</small>
+                </div>
+
+                {% if vehicle.availability %}
+                    <a href="{{ url_for('book_vehicle', vehicle_id=vehicle.vehicle_id) }}"
+                       class="btn btn-primary btn-lg btn-block" id="book-now-btn">
+                        🚗 Book Now
+                    </a>
+                {% else %}
+                    <div class="alert alert-danger">
+                        This vehicle is currently not available for booking.
+                    </div>
+                {% endif %}
+
+                <div style="margin-top: 16px;">
+                    <a href="{{ url_for('vehicles') }}" class="btn btn-secondary">← Back to Vehicles</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

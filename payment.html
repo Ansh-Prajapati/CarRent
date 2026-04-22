@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Payment{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div>
+            <h1>Complete Payment</h1>
+            <p class="breadcrumb">Booking &rsaquo; <span>Payment</span></p>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="payment-container">
+
+        <!-- Booking Summary -->
+        <div class="summary-box">
+            <h3>📋 Booking Summary</h3>
+            <div class="summary-row">
+                <span>Vehicle</span>
+                <strong>{{ booking.vehicle_name }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Pickup Date</span>
+                <strong>{{ booking.start_date }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Return Date</span>
+                <strong>{{ booking.end_date }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Duration</span>
+                <strong>{{ booking.total_days }} day{{ 's' if booking.total_days != 1 else '' }}</strong>
+            </div>
+            <div class="summary-row summary-total">
+                <span>Total Amount</span>
+                <strong style="color:var(--primary);font-size:1.3rem;">₹{{ booking.total_price }}</strong>
+            </div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="qr-wrap">
+            <h3 style="margin-bottom: 20px; color: var(--navy); text-align: center;">Scan to Pay via UPI</h3>
+            <div class="qr-box">
+                <img src="{{ url_for('generate_qr', amount=booking.total_price) }}" alt="UPI QR Code">
+            </div>
+            <div class="upi-info">
+                <p>UPI ID: <span class="upi-id">{{ upi_id }}</span></p>
+                <p class="upi-apps">Google Pay &bull; PhonePe &bull; Paytm &bull; Any UPI App</p>
+            </div>
+        </div>
+
+        <!-- Confirm Form -->
+        <div class="admin-section">
+            <div class="admin-section-header">
+                <h2>Confirm Your Payment</h2>
+            </div>
+
+            <form method="POST" id="payment-form">
+                <div class="form-group">
+                    <label for="upi_ref">UPI Reference / Transaction ID <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--mid-grey)">(optional)</span></label>
+                    <input type="text" id="upi_ref" name="upi_ref"
+                           placeholder="Enter the UTR / reference number after payment">
+                    <small>Find this in your UPI app's transaction history.</small>
+                </div>
+
+                <button type="submit" class="btn btn-success btn-block btn-lg" id="confirm-payment-btn">
+                    ✅ I've Made the Payment
+                </button>
+            </form>
+        </div>
+
+        <!-- Note -->
+        <div class="payment-note">
+            <span style="font-size:1.2rem;">⚠️</span>
+            <p>
+                <strong>Note:</strong> After clicking "I've Made the Payment", your booking will be submitted for
+                admin verification. You'll receive a confirmation once approved.
+            </p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users — Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div>
+            <h1>Manage Users</h1>
+            <p class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}" style="color:var(--primary)">Dashboard</a> &rsaquo; <span>Users</span></p>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+        <div class="admin-section">
+            <div class="table-wrapper">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Role</th>
+                                <th>Bookings</th>
+                                <th>Total Spent</th>
+                                <th>Joined</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td style="color:var(--mid-grey);font-size:0.82rem;">{{ user.user_id }}</td>
+                                <td><strong>{{ user.username }}</strong></td>
+                                <td>{{ user.full_name or '—' }}</td>
+                                <td style="font-size:0.85rem;">{{ user.email }}</td>
+                                <td style="font-size:0.85rem;">{{ user.phone or '—' }}</td>
+                                <td>
+                                    {% if user.role == 'ADMIN' %}
+                                        <span class="badge badge-admin">Admin</span>
+                                    {% else %}
+                                        <span class="badge badge-secondary">User</span>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align:center;">{{ user.total_bookings }}</td>
+                                <td><strong>₹{{ user.total_spent }}</strong></td>
+                                <td style="font-size:0.82rem;color:var(--mid-grey);">
+                                    {{ user.created_at.strftime('%d %b %Y') if user.created_at else '—' }}
+                                </td>
+                                <td>
+                                    {% if user.user_id != session.user_id %}
+                                        <a href="{{ url_for('toggle_role', user_id=user.user_id) }}"
+                                           class="btn btn-warning btn-sm"
+                                           onclick="return confirm('Toggle admin role for {{ user.username }}?')">
+                                            {% if user.role == 'ADMIN' %}Remove Admin{% else %}Make Admin{% endif %}
+                                        </a>
+                                    {% else %}
+                                        <span class="badge badge-secondary">You</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="10">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">👥</div>
+                                        <h3>No Users Found</h3>
+                                        <p>No registered users yet.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

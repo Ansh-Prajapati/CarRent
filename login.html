@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Login — CRS{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-container">
+        <div class="form-header">
+            <div class="form-icon">🔑</div>
+            <h2>Welcome Back</h2>
+            <p>Sign in to your CRS account to continue</p>
+        </div>
+
+        <form method="POST" id="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required placeholder="Enter your username" autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password" autocomplete="current-password">
+            </div>
+
+            
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn">
+                Login to Account
+            </button>
+        </form>
+
+        <div class="form-footer">
+            Don't have an account? <a href="{{ url_for('register') }}">Create one here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
