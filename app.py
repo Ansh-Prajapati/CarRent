@@ -271,6 +271,11 @@ def init_db():
 # Initialize database
 init_db()
 
+app = Flask(__name__)
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 # Decorators
 def login_required(f):
     @wraps(f)
